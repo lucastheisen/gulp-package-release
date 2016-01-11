@@ -4,6 +4,7 @@ var fs = require('fs');
 var fsExt = require('../util/fsExt');
 var git = require('gulp-git');
 var gulp = require('gulp');
+var gutil = require('gulp-util');
 var path = require('path');
 var Q = require('q');
 var release = require('../');
@@ -11,18 +12,49 @@ var gitPromise = require('../util/gitPromise');
 
 describe('gulp-package-release', function() {
     var originalCwd,
-        remoteDir = path.resolve('./test/remote'),
-        repoDir = path.resolve('./test/repo');
+        runDir = path.resolve('./test/run'),
+        baseDir = path.resolve(path.join(runDir, 'base')),
+        remoteDir = path.resolve(path.join(baseDir, 'remote')),
+        repoDir = path.resolve(path.join(baseDir, 'repo')),
+        currentDir = path.resolve(path.join(runDir, 'current')),
+        currentRemoteDir = path.resolve(path.join(currentDir, 'remote')),
+        currentRepoDir = path.resolve(path.join(currentDir, 'repo'));
 
     after(function() {
-        process.chdir(originalCwd);
-        fsExt.rmdirs([remoteDir, repoDir]);
+        return Q.fcall(function() {
+                gutil.log('begin after');
+                process.chdir(originalCwd);
+            })
+            .then(function() {
+                return fsExt.rmdirs([runDir]);
+            })
+            .then(function() {
+                gutil.log('end after');
+            });
     });
 
-    before(function(done) {
-        Q.fcall(function() {
+    afterEach(function() {
+        return Q.fcall(function() {
+                gutil.log('begin afterEach');
+                process.chdir(originalCwd);
+            })
+            .then(function() {
+                return fsExt.rmdirs([currentDir]);
+            })
+            .then(function() {
+                gutil.log('end afterEach');
+            });
+    });
+
+    before(function() {
+        return Q.fcall(function() {
+                gutil.log('begin before');
                 originalCwd = process.cwd();
-                fsExt.mkdirs([remoteDir, repoDir]);
+            })
+            .then(function() {
+                return fsExt.mkdirs([runDir, baseDir, remoteDir, repoDir]);
+            })
+            .then(function() {    
                 fs.writeFileSync(path.join(repoDir, 'README.md'), 'h1. Test');
                 process.chdir(repoDir);
             })
@@ -36,8 +68,8 @@ describe('gulp-package-release', function() {
                 var deferred = Q.defer();
 
                 gulp.src('.')
-                    .pipe(git.add())
-                    .pipe(git.commit('Initial commit'))
+                    .pipe(git.add({quiet: false}))
+                    .pipe(git.commit('Initial commit', {quiet: false}))
                     .on('finish', function() {
                         deferred.resolve();
                     });
@@ -46,22 +78,45 @@ describe('gulp-package-release', function() {
             })
             .then(function() {
                 return gitPromise('addRemote', 
-                    ['origin', 'file://' + path.resolve(remoteDir)]);
+                    ['origin', 'file://' + remoteDir], {quiet: false});
             })
             .then(function() {
-                return gitPromise('push', ['origin', 'master'], {args: '-u'});
+                return gitPromise('push', ['origin', 'master'], {args: '-u', quiet: false});
             })
-            .fail(function(err) {
-                throw err;
-            })
-            .fin(function() {
-                done();
+            .then(function() {
+                gutil.log('end before');
             });
     });
 
-    describe('check-status', function() {
-        it('should pass to start', function(done) {
-            release.checkStatus().then(done).done();
+    beforeEach(function() {
+        return Q.fcall(function() {
+                var deferred = Q.defer();
+                gutil.log('begin beforeEach');
+
+                gulp.src(path.join(baseDir, '**'), {dot: true})
+                    .pipe(gulp.dest(currentDir))
+                    .on('finish', function(err) {
+                        if (err) {
+                            deferred.reject(err);
+                        }
+                        process.chdir(currentRepoDir);
+                        deferred.resolve();
+                    });
+
+                return deferred.promise;
+            })
+            .then(function() {
+                return gitPromise('exec', [],
+                    {args: 'remote set-url origin file://' + currentRemoteDir});
+            })
+            .then(function() {
+                gutil.log('end beforeEach');
+            });
+    });
+
+    describe('checkStatus', function() {
+        it('should pass to start', function() {
+            return release.checkStatus().then();
         });
     });
 });

@@ -4,5 +4,4 @@
 
 # Node
 /node_modules
-/test/repo
-/test/remote
+/test/run
