@@ -21,6 +21,7 @@
     "semver": "^5.1.0"
   },
   "devDependencies": {
+    "chai": "^2.1.0",
     "jshint": "^2.8.0",
     "mocha": "^2.3.0",
     "rimraf": "^2.4.3",

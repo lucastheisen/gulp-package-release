@@ -1,14 +1,15 @@
 'use strict';
 
+var chai = require('chai'),should = chai.should();
 var fs = require('fs');
 var fsExt = require('../util/fsExt');
 var git = require('gulp-git');
+var gitPromise = require('../util/gitPromise');
 var gulp = require('gulp');
 var gutil = require('gulp-util');
 var path = require('path');
 var Q = require('q');
 var release = require('../');
-var gitPromise = require('../util/gitPromise');
 
 describe('gulp-package-release', function() {
     var originalCwd,
@@ -116,7 +117,24 @@ describe('gulp-package-release', function() {
 
     describe('checkStatus', function() {
         it('should pass to start', function() {
-            return release.checkStatus().then();
+            return release.checkStatus();
+        });
+
+        it('should fail with Uncommitted', function() {
+            return Q.fcall(function() {
+                    fs.writeFileSync(path.join(currentRepoDir, 'index.html'), '<html></html>');
+                })
+                .then(function() {
+                    return release.checkStatus();
+                })
+                .then(
+                    function(value) {
+                        should.fail();
+                    },
+                    function(err) {
+                        err.message.indexOf('Uncommitted ').should.equal(0);
+                    }
+                );
         });
     });
 });

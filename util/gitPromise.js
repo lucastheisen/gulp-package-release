@@ -9,16 +9,27 @@ module.exports = function(command, args, options, callback) {
     options && args.push(options);
 
     args.push(function(err, stdout) {
-        var result = stdout;
+        var result = stdout,
+            callbackError;
         if (err) {
             deferred.reject(err);
         }
 
         if (callback) {
-            result = callback(err, stdout);
+            try {
+                result = callback(err, stdout);
+            }
+            catch (e) {
+                callbackError = e;
+            }
         }
 
-        deferred.resolve(result);
+        if (callbackError) {
+            deferred.reject(callbackError);
+        }
+        else {
+            deferred.resolve(result);
+        }
     });
 
     git[command].apply(this, args);
