@@ -12,7 +12,6 @@ module.exports = function(files, message, options) {
         options = options || {},
         push = options.push || 'push';
 
-console.log("REMOVE ME: [" + files + "]");
     gulp.src(files)
         .pipe(git.add())
         .pipe(git.commit(message))

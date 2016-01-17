@@ -21,7 +21,8 @@ describe('gulp-package-release', function() {
         repoDir = path.resolve(path.join(baseDir, 'repo')),
         currentDir = path.resolve(path.join(runDir, 'current')),
         currentRemoteDir = path.resolve(path.join(currentDir, 'remote')),
-        currentRepoDir = path.resolve(path.join(currentDir, 'repo'));
+        currentRepoDir = path.resolve(path.join(currentDir, 'repo')),
+        currentCloneDir = path.resolve(path.join(currentDir, 'clone'));
 
     after(function() {
         return Q.fcall(function() {
@@ -200,12 +201,23 @@ describe('gulp-package-release', function() {
                         cwd: currentRepoDir,
                         files: [packageDotJson],
                         releaseCallback: function() {
+                            delete require.cache[packageDotJson];
                             require(packageDotJson).version.should.equal('0.0.1');
                         }
                     });
                 })
                 .then(function() {
-                    require(packageDotJson).version.should.equal('0.0.1');
+                    return release.checkStatus();
+                })
+                .then(function() {
+                    return gitPromise('exec', [], {args: 'clone ' + currentRemoteDir + ' ' + currentCloneDir})
+                        .then(function() {
+                            require(path.join(currentCloneDir, 'package.json'))
+                                .version.should.equal('0.0.2-SNAPSHOT');
+                        })
+                        .then(function() {
+                            gitPromise('revParse', [], {args: 'v0.0.1', cwd: currentCloneDir})
+                        });
                 });
         });
     });
