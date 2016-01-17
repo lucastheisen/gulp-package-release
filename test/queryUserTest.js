@@ -100,4 +100,20 @@ describe('util-queryUser', function() {
                 answers.nextVersion.should.equal('1.0.1-SNAPSHOT');
             });
     });
+
+    it('should ask version, tag and nextVersion, and accept defaults', function() {
+        return queryUser(
+            {
+                withPrompt: function(prompt) {
+                    prompt.rl.emit('line', '');
+                    prompt.rl.emit('line', '');
+                    prompt.rl.emit('line', '');
+                }
+            })
+            .then(function(answers) {
+                answers.version.should.equal('0.0.1');
+                answers.tag.should.equal('v0.0.1');
+                answers.nextVersion.should.equal('0.0.2-SNAPSHOT');
+            });
+    });
 });

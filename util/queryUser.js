@@ -47,10 +47,10 @@ module.exports = function(options) {
                             gutil.log('Cant find %s', file);
                         }
                     }
-                    version = version || '1.0.0';
 
+                    version = semver.inc(version, 'patch') || '1.0.0';
                     gutil.log('Default release version [%s]', version);
-                    return semver.inc(version, 'patch').version;
+                    return version;
                 }
             },
             {
