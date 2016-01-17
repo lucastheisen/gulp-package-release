@@ -1,17 +1,22 @@
 'use strict';
 
+var gutil = require('gulp-util');
 var inquirer = require('inquirer');
 var path = require('path');
 var Q = require('q');
 var semver = require('semver');
 
-module.exports = function(config) {
+module.exports = function(options) {
     var deferred = Q.defer(),
         prompt,
-        answers;
+        answers,
+        files,
+        cwd;
 
-    config = config || {},
-    answers = config.answers || {};
+    options = options || {},
+    answers = options.answers || {};
+    cwd = options.cwd || process.cwd();
+    files = options.files || ['bower.json', 'package.json'];
 
     if (answers.version && answers.tag && answers.nextVersion) {
         deferred.resolve(answers);
@@ -26,21 +31,25 @@ module.exports = function(config) {
                     return !answers.version;
                 },
                 default: function() {
-                    var version;
-                    try {
-                        version = require(
-                            path.join(process.cwd(), '/bower.json')).version;
-                    }
-                    catch (e) {
+                    var index = 0,
+                        file,
+                        version;
+
+                    for (; index < files.length; index++) {
+                        file = files[index];
                         try {
                             version = require(
-                                path.join(process.cwd(), '/package.json')).version;
+                                path.join(cwd, file)).version;
+                            gutil.log('Using %s version [%s]', file, version);
+                            break;
                         }
                         catch (e) {
-                            throw e;
+                            gutil.log('Cant find %s', file);
                         }
                     }
-                    return version;
+                    version = version || '1.0.0';
+
+                    return semver.inc(version, 'patch').version;
                 }
             },
             {
@@ -74,8 +83,8 @@ module.exports = function(config) {
                 });
             });
 
-        if (config.withPrompt) {
-            config.withPrompt(prompt);
+        if (options.withPrompt) {
+            options.withPrompt(prompt);
         }
     }
     return deferred.promise;
