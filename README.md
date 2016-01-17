@@ -55,10 +55,34 @@ Performs the following tasks in order:
 This procedure allows you to always develop your project using pre-release version numbers until you are ready to cut a release.  Only during the release will the version number be non-pre-release.  The `releaseCallback` can be used to do any additional packaging and publishing using the tagged version of the code.
 
 ```javascript
-release(options);
+release([options]);
 ```
 #### options
 Type: `Object`
+##### options.answers
+Type: `Object`
+An object containing answers to any of the three interactive questions:
+1. `version`: The release version
+2. `tag`: The tag name
+3. `nextVersion`:  The next development version
+If an answer is provided, the _corresponding_ question will not be asked.  For example: 
+```javascript
+{
+    "version": "1.0.1",
+    "tag": "v1.0.1",
+    "nextVersion": "1.0.2-SNAPSHOT"
+}
+```
+If an answer is not provided for a question, the user will be prompted to answer it _interactively_.  For example:
+```javascript
+{
+    "version": "1.0.1",
+}
+```
+In this case, the user will be asked for a `tag` and for the `nextVersion`.
+##### options.files
+Type: `Array` or `String`  Default: `['bower.json', 'package.json']`
+Glob or array of globs to read. Globs use [node-glob](https://github.com/isaacs/node-glob) syntax except that negation is fully supported.  Should point to `JSON` files containing a `version` property.
 ##### options.releaseCallback
 Type: `Function`
 A function to be called during the release process after the release tag has been committed and pushed, but before the version has been updated to the next version.  This would be useful if you plan on publishing to an artifact repository (like npm or maven).
