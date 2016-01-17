@@ -49,6 +49,7 @@ module.exports = function(options) {
                     }
                     version = version || '1.0.0';
 
+                    gutil.log('Default release version [%s]', version);
                     return semver.inc(version, 'patch').version;
                 }
             },
