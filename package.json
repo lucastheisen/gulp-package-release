@@ -29,7 +29,7 @@
     "should": "^7.1.0"
   },
   "scripts": {
-    "test": "mocha --reporter spec --timeout 15000 test/releaseTest.js test/queryUserTest.js", 
-    "posttest": "jshint ./lib/. ./test/."
+    "test": "mocha --reporter spec --timeout 30000 test/releaseTest.js test/queryUserTest.js", 
+    "posttest": "jshint ./lib/. ./test/. ./util/."
   }
 }

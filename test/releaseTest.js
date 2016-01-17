@@ -10,8 +10,8 @@ var gulp = require('gulp');
 var gutil = require('gulp-util');
 var path = require('path');
 var Q = require('q');
-var release = require('../');
-var releasePromise = release.releasePromise;
+var checkStatus = require('../').checkStatus;
+var release = require('../').release;
 
 describe('gulp-package-release', function() {
     var originalCwd,
@@ -110,7 +110,7 @@ describe('gulp-package-release', function() {
 
     describe('checkStatus', function() {
         it('should pass to start', function() {
-            return release.checkStatus();
+            return checkStatus();
         });
 
         it('should fail with Uncommitted', function() {
@@ -118,7 +118,7 @@ describe('gulp-package-release', function() {
                     fs.writeFileSync(path.join(currentRepoDir, 'index.html'), '<html></html>');
                 })
                 .then(function() {
-                    return release.checkStatus();
+                    return checkStatus();
                 })
                 .then(
                     function(value) {
@@ -149,7 +149,7 @@ describe('gulp-package-release', function() {
                     return deferred.promise;
                 })
                 .then(function() {
-                    return release.checkStatus();
+                    return checkStatus();
                 })
                 .then(
                     function(value) {
@@ -172,7 +172,7 @@ describe('gulp-package-release', function() {
                     return gitCommitAndPush('index.html', 'Commit index');
                 })
                 .then(function() {
-                    return release.checkStatus();
+                    return checkStatus();
                 });
         });
     });
@@ -189,10 +189,10 @@ describe('gulp-package-release', function() {
                     return gitCommitAndPush('index.html', 'Commit index');
                 })
                 .then(function() {
-                    return release.checkStatus();
+                    return checkStatus();
                 })
                 .then(function() {
-                    return releasePromise({
+                    return release({
                         withPrompt: function(prompt) {
                             prompt.rl.emit('line', '0.0.1');
                             prompt.rl.emit('line', 'v0.0.1');
@@ -207,7 +207,7 @@ describe('gulp-package-release', function() {
                     });
                 })
                 .then(function() {
-                    return release.checkStatus();
+                    return checkStatus();
                 })
                 .then(function() {
                     return gitPromise('exec', [], {args: 'clone ' + currentRemoteDir + ' ' + currentCloneDir})
@@ -216,7 +216,7 @@ describe('gulp-package-release', function() {
                                 .version.should.equal('0.0.2-SNAPSHOT');
                         })
                         .then(function() {
-                            gitPromise('revParse', [], {args: 'v0.0.1', cwd: currentCloneDir})
+                            gitPromise('revParse', [], {args: 'v0.0.1', cwd: currentCloneDir});
                         });
                 });
         });

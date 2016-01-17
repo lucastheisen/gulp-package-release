@@ -9,8 +9,10 @@ var Q = require('q');
 module.exports = function(files, message, options) {
     var deferred = Q.defer(),
         promise = deferred.promise,
-        options = options || {},
-        push = options.push || 'push';
+        push;
+
+    options = options || {};
+    push = options.push || 'push';
 
     gulp.src(files)
         .pipe(git.add())

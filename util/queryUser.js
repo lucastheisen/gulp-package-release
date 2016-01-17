@@ -8,8 +8,10 @@ var semver = require('semver');
 module.exports = function(config) {
     var deferred = Q.defer(),
         prompt,
-        config = config || {},
-        answers = config.answers || {};
+        answers;
+
+    config = config || {},
+    answers = config.answers || {};
 
     if (answers.version && answers.tag && answers.nextVersion) {
         deferred.resolve(answers);
@@ -38,7 +40,7 @@ module.exports = function(config) {
                             throw e;
                         }
                     }
-                    return version
+                    return version;
                 }
             },
             {

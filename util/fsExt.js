@@ -24,7 +24,7 @@ var findRecurse = function(wanted, fullPath, dir, name) {
     }
 
     wanted(fullPath, dir, name);
-}
+};
 
 var find = function(wanted, dirs) {
     var cwd = process.cwd();
@@ -42,7 +42,7 @@ var find = function(wanted, dirs) {
             process.chdir(cwd);
         }
     });
-}
+};
 
 var mkdir = function(dir) {
     var deferred = Q.defer();
@@ -54,11 +54,12 @@ var mkdir = function(dir) {
         deferred.resolve();
     });
 
-    return deferred.promise
-}
+    return deferred.promise;
+};
 
 var mkdirs = function(dirs) {
-    var chain
+    var chain;
+
     dirs.forEach(function(dir) {
         if (!chain) {
             chain = mkdir(dir);
@@ -70,10 +71,9 @@ var mkdirs = function(dirs) {
         }
     });
     return chain;
-}
+};
 
 var rmdir = function(dir, tries, deferred) {
-    var deferred;
     if (deferred) {
         debug && gutil.log('retry %d', tries);
     }
@@ -103,7 +103,7 @@ var rmdir = function(dir, tries, deferred) {
     });
 
     return deferred.promise;
-}
+};
 
 var rmdirs = function(dirs) {
     var chain = Q.fcall(function() {});
@@ -125,10 +125,9 @@ var rmdirs = function(dirs) {
                 }
             }, dirs);
     return chain;
-}
+};
 
 var unlink = function(file, tries, deferred) {
-    var deferred;
     if (deferred) {
         debug && gutil.log('retry %d', tries);
     }
@@ -159,7 +158,7 @@ var unlink = function(file, tries, deferred) {
     });
 
     return deferred.promise;
-}
+};
 
 module.exports = {
     find: find,
