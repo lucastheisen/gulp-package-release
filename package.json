@@ -1,7 +1,7 @@
 {
   "name": "gulp-package-release",
   "description": "An opinionated approach to release",
-  "version": "0.0.1-SNAPSHOT",
+  "version": "0.0.1",
   "homepage": "https://github.com/lucastheisen/gulp-package-release",
   "repository": {
     "type": "git",
@@ -29,7 +29,7 @@
     "should": "^7.1.0"
   },
   "scripts": {
-    "test": "mocha --reporter spec --timeout 30000 test/releaseTest.js test/queryUserTest.js", 
+    "test": "mocha --reporter spec --timeout 30000 test/releaseTest.js test/queryUserTest.js",
     "posttest": "jshint ./lib/. ./test/. ./util/."
   }
 }
