@@ -4,12 +4,14 @@ var chai = require('chai'),should = chai.should();
 var fs = require('fs');
 var fsExt = require('../util/fsExt');
 var git = require('gulp-git');
+var gitCommitAndPush = require('../util/gitCommitAndPush');
 var gitPromise = require('../util/gitPromise');
 var gulp = require('gulp');
 var gutil = require('gulp-util');
 var path = require('path');
 var Q = require('q');
 var release = require('../');
+var releasePromise = release.releasePromise;
 
 describe('gulp-package-release', function() {
     var originalCwd,
@@ -57,6 +59,8 @@ describe('gulp-package-release', function() {
             })
             .then(function() {    
                 fs.writeFileSync(path.join(repoDir, 'README.md'), 'h1. Test');
+                fs.writeFileSync(path.join(repoDir, 'package.json'), 
+                    '{"version": "0.0.1-SNAPSHOT"}');
                 process.chdir(repoDir);
             })
             .then(function() {
@@ -66,23 +70,11 @@ describe('gulp-package-release', function() {
                 return gitPromise('init', [], {args: '--quiet'});
             })
             .then(function() {
-                var deferred = Q.defer();
-
-                gulp.src('.')
-                    .pipe(git.add({quiet: false}))
-                    .pipe(git.commit('Initial commit', {quiet: false}))
-                    .on('finish', function() {
-                        deferred.resolve();
-                    });
-
-                return deferred.promise;
-            })
-            .then(function() {
                 return gitPromise('addRemote', 
                     ['origin', 'file://' + remoteDir], {quiet: false});
             })
             .then(function() {
-                return gitPromise('push', ['origin', 'master'], {args: '-u', quiet: false});
+                return gitCommitAndPush('.', 'Initial commit', {push: 'push -u origin master'});
             })
             .then(function() {
                 gutil.log('end before');
@@ -96,7 +88,7 @@ describe('gulp-package-release', function() {
 
                 gulp.src(path.join(baseDir, '**'), {dot: true})
                     .pipe(gulp.dest(currentDir))
-                    .on('finish', function(err) {
+                    .on('end', function(err) {
                         if (err) {
                             deferred.reject(err);
                         }
@@ -135,6 +127,86 @@ describe('gulp-package-release', function() {
                         err.message.indexOf('Uncommitted ').should.equal(0);
                     }
                 );
+        });
+
+        it('should fail with Latest changes not pushed', function() {
+            var index = path.join(currentRepoDir, 'index.html');
+
+            return Q.fcall(function() {
+                    fs.writeFileSync(index, '<html></html>');
+                })
+                .then(function() {
+                    var deferred = Q.defer();
+
+                    gulp.src(index)
+                        .pipe(git.add({quiet: true}))
+                        .pipe(git.commit('Commit index', {quiet: true}))
+                        .on('end', function() {
+                            deferred.resolve();
+                        });
+
+                    return deferred.promise;
+                })
+                .then(function() {
+                    return release.checkStatus();
+                })
+                .then(
+                    function(value) {
+                        should.fail();
+                    },
+                    function(err) {
+                        gutil.log('Error: %s', err);
+                        err.message.indexOf('Latest changes not pushed to remote').should.equal(0);
+                    }
+                );
+        });
+
+        it('should pass after push', function() {
+            var index = path.join(currentRepoDir, 'index.html');
+
+            return Q.fcall(function() {
+                    fs.writeFileSync(index, '<html></html>');
+                })
+                .then(function() {
+                    return gitCommitAndPush('index.html', 'Commit index');
+                })
+                .then(function() {
+                    return release.checkStatus();
+                });
+        });
+    });
+
+    describe('release', function() {
+        it('should pass after release', function() {
+            var index = path.join(currentRepoDir, 'index.html'),
+                packageDotJson = path.join(currentRepoDir, 'package.json');
+
+            return Q.fcall(function() {
+                    fs.writeFileSync(index, '<html></html>');
+                })
+                .then(function() {
+                    return gitCommitAndPush('index.html', 'Commit index');
+                })
+                .then(function() {
+                    return release.checkStatus();
+                })
+                .then(function() {
+                    return releasePromise({
+                        withPrompt: function(prompt) {
+                            prompt.rl.emit('line', '0.0.1');
+                            prompt.rl.emit('line', 'v0.0.1');
+                            prompt.rl.emit('line', '0.0.2-SNAPSHOT');
+                        },
+                        cwd: currentRepoDir,
+                        files: [packageDotJson],
+                        releaseCallback: function() {
+                            require(packageDotJson).version.should.equal('0.0.1');
+                        }
+                    });
+                })
+                .then(function() {
+                    require(packageDotJson).version.should.equal('0.0.1');
+                });
         });
     });
 });

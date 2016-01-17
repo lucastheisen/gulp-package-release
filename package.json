@@ -24,11 +24,12 @@
     "chai": "^2.1.0",
     "jshint": "^2.8.0",
     "mocha": "^2.3.0",
+    "mockery": "^1.4.0",
     "rimraf": "^2.4.3",
     "should": "^7.1.0"
   },
   "scripts": {
-    "test": "mocha --reporter spec --timeout 6000 test/main.js", 
+    "test": "mocha --reporter spec --timeout 15000 test/releaseTest.js test/queryUserTest.js", 
     "posttest": "jshint ./lib/. ./test/."
   }
 }
