@@ -8,9 +8,9 @@ var release = require('.').release
 gulp.task('release', function() {
     return release(
         {
-            releaseCallback: function() {
+            releaseCallback: function(answers) {
                 var deferred = Q.defer();
-                spawn('npm', ['publish', '.'], {stdio: 'inherit'})
+                spawn('npm', ['publish', '.', '--tag', answers.tag, '--access', 'public'], {stdio: 'inherit'})
                     .on('close', function(err) {
                         if (err) {
                             deferred.reject(err);
