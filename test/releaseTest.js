@@ -210,6 +210,10 @@ describe('gulp-package-release', function() {
                     return checkStatus();
                 })
                 .then(function() {
+                    delete require.cache[packageDotJson];
+                    require(packageDotJson).version.should.equal('0.0.2-SNAPSHOT');
+                })
+                .then(function() {
                     return gitPromise('exec', [], {args: 'clone ' + currentRemoteDir + ' ' + currentCloneDir})
                         .then(function() {
                             require(path.join(currentCloneDir, 'package.json'))
