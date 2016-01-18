@@ -1,7 +1,7 @@
 'use strict';
 
 var gulp = require('gulp');
-var npm = require('npm');
+var spawn = require('child_process').spawn;
 var Q = require('q');
 var release = require('.').release
 
@@ -10,8 +10,8 @@ gulp.task('release', function() {
         {
             releaseCallback: function() {
                 var deferred = Q.defer();
-                npm.publish(['.'], false, 
-                    function(err) {
+                spawn('npm', ['publish', '.'], {stdio: 'inherit'})
+                    .on('close', function(err) {
                         if (err) {
                             deferred.reject(err);
                         }
