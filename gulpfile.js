@@ -1,29 +1,16 @@
 'use strict';
 
 var gulp = require('gulp');
-var spawn = require('child_process').spawn;
+var publish = require('.').npmPublish;
 var Q = require('q');
-var release = require('.').release
+var release = require('.').release;
+var spawn = require('child_process').spawn;
 
 gulp.task('release', function() {
     return release(
         {
             releaseCallback: function(answers) {
-                var deferred = Q.defer();
-
-                spawn((process.platform === 'win32') ? 'npm.cmd' : 'npm',
-                    ['publish', '.', '--access', 'public'], 
-                    {
-                        stdio: 'inherit'
-                    })
-                    .on('close', function(err) {
-                        if (err) {
-                            deferred.reject(err);
-                        }
-                        deferred.resolve();
-                    });
-
-                return deferred.promise;
+                return publish({access: 'public'});
             }
         });
 });

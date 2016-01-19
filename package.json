@@ -28,7 +28,7 @@
     "should": "^7.1.0"
   },
   "scripts": {
-    "test": "mocha --reporter spec --timeout 30000 test/releaseTest.js test/queryUserTest.js",
-    "posttest": "jshint ./lib/. ./test/. ./util/."
+    "test": "mocha --reporter spec --timeout 30000 test/releaseTest.js test/queryUserTest.js test/npmPublishTest.js",
+    "posttest": "jshint ./gulp-package-release.js ./lib/. ./test/. ./util/."
   }
 }
