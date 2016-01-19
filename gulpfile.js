@@ -10,7 +10,11 @@ gulp.task('release', function() {
         {
             releaseCallback: function(answers) {
                 var deferred = Q.defer();
-                spawn('npm', ['publish', '.', '--tag', answers.tag, '--access', 'public'], {stdio: 'inherit'})
+                spawn('node', 
+                    ['node_modules/npm/bin/npm-cli.js', 'publish', '.', '--tag', answers.tag, '--access', 'public'], 
+                    {
+                        stdio: 'inherit'
+                    })
                     .on('close', function(err) {
                         if (err) {
                             deferred.reject(err);
