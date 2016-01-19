@@ -11,7 +11,7 @@ gulp.task('release', function() {
             releaseCallback: function(answers) {
                 var deferred = Q.defer();
                 spawn('node', 
-                    ['node_modules/npm/bin/npm-cli.js', 'publish', '.', '--tag', answers.tag, '--access', 'public'], 
+                    ['node_modules/npm/bin/npm-cli.js', 'publish', '.', '--access', 'public'], 
                     {
                         stdio: 'inherit'
                     })
