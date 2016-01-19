@@ -9,7 +9,7 @@
   },
   "author": "Lucas Theisen <lucastheisen@pastdev.com>",
   "main": "gulp-package-release.js",
-  "private": true,
+  "private": false,
   "dependencies": {
     "gulp": "^3.9.0",
     "gulp-bump": "^1.0.0",
