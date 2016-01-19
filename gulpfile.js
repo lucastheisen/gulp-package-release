@@ -9,9 +9,10 @@ gulp.task('release', function() {
     return release(
         {
             releaseCallback: function(answers) {
-                var deferred = Q.defer();
-                spawn('node', 
-                    ['node_modules/npm/bin/npm-cli.js', 'publish', '.', '--access', 'public'], 
+                var deferred = Q.defer(),
+
+                spawn((process.platform === 'win32') ? 'npm.cmd' : 'npm',
+                    ['publish', '.', '--access', 'public'], 
                     {
                         stdio: 'inherit'
                     })
@@ -21,6 +22,7 @@ gulp.task('release', function() {
                         }
                         deferred.resolve();
                     });
+
                 return deferred.promise;
             }
         });
