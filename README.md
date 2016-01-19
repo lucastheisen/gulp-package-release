@@ -32,6 +32,30 @@ gulp.task('status', function() {
     return checkStatus();
 });
 ```
+Or:
+```javascript
+var npmPublish = require('gulp-package-release').npmPublish;
+
+gulp.task('publish', function() {
+    return npmPublish();
+});
+```
+Or combine a couple:
+```javascript
+var gpr = require('gulp-package-release'),
+    publish = gpr.npmPublish,
+    release = gpr.release;
+
+
+gulp.task('publish', function() {
+    return release(
+        {
+            releaseCallback: function(answers) {
+                return publish({access: 'public'});
+            }
+        });
+});
+```
 
 ### checkStatus()
 Ensures that all code in the project is committed, and that the HEAD is the same as the upstream HEAD.
@@ -39,6 +63,27 @@ Ensures that all code in the project is committed, and that the HEAD is the same
 ```javascript
 checkStatus();
 ```
+
+### npmPublish()
+Spawns an `npm publish` command.  See the [npm publish](https://docs.npmjs.com/cli/publish) documentation for more information.
+
+```javascript
+npmPublish([options]);
+```
+#### options
+Type: `Object`
+##### options.access
+Type: `String`
+Tells the registry whether this package should be published as `public` or `restricted`.
+##### options.folder
+Type: `String`
+The folder to publish to npm
+##### options.tag
+Type: `String`
+Registers the published package with the given tag, such that npm install <name>@<tag> will install this version.
+##### options.tarball
+Type: `String`
+The tarball to publish to npm
 
 ### release(options)
 Performs the following tasks in order:
