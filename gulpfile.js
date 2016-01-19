@@ -9,7 +9,7 @@ gulp.task('release', function() {
     return release(
         {
             releaseCallback: function(answers) {
-                var deferred = Q.defer(),
+                var deferred = Q.defer();
 
                 spawn((process.platform === 'win32') ? 'npm.cmd' : 'npm',
                     ['publish', '.', '--access', 'public'], 
