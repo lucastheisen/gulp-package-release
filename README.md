@@ -90,11 +90,11 @@ Performs the following tasks in order:
 
 1. Verifies status using `checkStatus`
 2. Asks the user for the release version, tag name, and next version (if not supplied as options) 
-3. Updates the release version in both `package.json` and `bower.json` (using release verison from step 2)
+3. Updates the release version in `package.json`, or list of files from `options.files` (using release verison from step 2)
 4. Commits and pushes the modified file(s)
 5. Creates, commits, and pushes an annotated tag (using name from step 2 for both name and message)
 6. Calls `releaseCallback` if specified
-7. Updates the next version in both `package.json` and `bower.json` (using next verison from step 2)
+7. Updates the next version in both `package.json`, or list of files from `options.files` (using next verison from step 2)
 8. Commits and pushes the modified file(s)
 
 This procedure allows you to always develop your project using pre-release version numbers until you are ready to cut a release.  Only during the release will the version number be non-pre-release.  The `releaseCallback` can be used to do any additional packaging and publishing using the tagged version of the code.
@@ -126,7 +126,7 @@ If an answer is not provided for a question, the user will be prompted to answer
 ```
 In this case, the user will be asked for a `tag` and for the `nextVersion`.
 ##### options.files
-Type: `Array` or `String`  Default: `['bower.json', 'package.json']`
+Type: `Array` or `String`  Default: `['package.json']`
 Glob or array of globs to read. Globs use [node-glob](https://github.com/isaacs/node-glob) syntax except that negation is fully supported.  Should point to `JSON` files containing a `version` property.
 ##### options.releaseCallback
 Type: `Function`

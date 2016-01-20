@@ -16,7 +16,7 @@ module.exports = function(options) {
     options = options || {},
     answers = options.answers || {};
     cwd = options.cwd || process.cwd();
-    files = options.files || ['bower.json', 'package.json'];
+    files = options.files || ['package.json'];
 
     if (answers.version && answers.tag && answers.nextVersion) {
         deferred.resolve(answers);
