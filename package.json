@@ -1,7 +1,7 @@
 {
   "name": "gulp-package-release",
   "description": "An opinionated approach to release",
-  "version": "1.0.1-SNAPSHOT",
+  "version": "1.0.1",
   "homepage": "https://github.com/lucastheisen/gulp-package-release",
   "repository": {
     "type": "git",
