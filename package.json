@@ -13,12 +13,12 @@
   "dependencies": {
     "gulp": "^3.9.0",
     "gulp-bump": "^1.0.0",
-    "gulp-git": "^1.6.1",
+    "gulp-git": "^2.4.1",
     "gulp-util": "^3.0.7",
     "inquirer": "^0.11.1",
     "npm": "^2.14.1",
     "q": "^1.4.1",
-    "require-dir": "^0.1.0",
+    "require-dir": "^0.3.2",
     "semver": "^5.1.0"
   },
   "devDependencies": {
